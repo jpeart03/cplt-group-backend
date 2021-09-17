@@ -2,12 +2,15 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from phonenumber_field.modelfields import PhoneNumberField
 
-# class User(AbstractUser):
+# class AppUser(AbstractUser):
 class AppUser(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     phone = PhoneNumberField() # Retreive using User.phone.as_e164 for Twillio
+
+    # username = models.CharField(max_length=100, default="username")
+    # password = models.CharField(max_length=100, default="pw123")
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
