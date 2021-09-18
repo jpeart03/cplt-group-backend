@@ -14,10 +14,11 @@ class RecipientViewSet(viewsets.ModelViewSet):
     serializer_class = RecipientSerializer
 
     def get_queryset(self):
-        return Recipient.objects.filter(user=self.kwargs['users_pk'])
+        recps = Recipient.objects.filter(user=self.kwargs['user_pk'])
+        return recps
 
     def perform_create(self, serializer):
-        user = AppUser.object.get(pk=self.kwargs['users_pk'])
+        user = AppUser.objects.get(pk=self.kwargs['user_pk'])
         serializer.save(user=user)
 
 
@@ -27,9 +28,20 @@ class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
 
     def get_queryset(self):
-        return Message.objects.filter(user=self.kwargs['users_pk'])
+        mgs = Message.objects.filter(user=self.kwargs['user_pk'])
+        return mgs
 
     def perform_create(self, serializer):
-        user = AppUser.objects.get(pk=self.kwargs['users_pk'])
-        recipient = Recipient.objects.get(pk=self.kwargs['recipients_pk'])
+        user = AppUser.objects.get(pk=self.kwargs['user_pk'])
+
+        recipient_pk = self.request.POST['recipient']
+        recipient = Recipient.objects.get(pk=recipient_pk)
+
         serializer.save(user=user, recipient=recipient)
+
+    def perform_destroy(self, instance): # This intentionally prevents deletion of messages
+        return
+
+    def perform_update(self, serializer): # This intentionally prevents upding of messages
+        return 
+        

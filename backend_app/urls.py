@@ -7,7 +7,8 @@ from django.conf.urls import url
 router = routers.SimpleRouter()
 router.register(r'', UserViewSet)
 
-users_router = routers.NestedSimpleRouter(router, r'', lookup='users')
+users_router = routers.NestedSimpleRouter(router, r'', lookup='user')
+users_router.register(r'recipients', RecipientViewSet, basename='users-recipients')
 users_router.register(r'messages', MessageViewSet, basename='users-messages')
 
 
