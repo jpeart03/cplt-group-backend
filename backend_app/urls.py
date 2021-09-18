@@ -15,4 +15,6 @@ users_router.register(r'messages', MessageViewSet, basename='users-messages')
 urlpatterns = [
     url(r'', include(router.urls)),
     url(r'', include(users_router.urls)),
+    path('auth/', include('rest_auth.urls')),    
+    path('auth/register/', include('rest_auth.registration.urls'))
 ]
