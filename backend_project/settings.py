@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOWED_ORIGINS = [    
+'http://localhost:3000',
+#'https://heroku_front_end_url.com',
+]
 
 # Application definition
 
@@ -40,12 +44,22 @@ INSTALLED_APPS = [
 
     'backend_app',
     'rest_framework',
+
+    'rest_framework.authtoken', # auth
+    'rest_auth', # auth
+    'django.contrib.sites', # auth
+    'allauth', # auth
+    'allauth.account', # auth
+    'allauth.socialaccount', # auth
+    'rest_auth.registration', # auth
+    'corsheaders', # auth
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -125,6 +139,27 @@ STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "backend_app.AppUser"
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",    
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+REST_FRAMEWORK = {    
+'DATETIME_FORMAT': "%m/%d/%Y %I:%M%P",    
+'DEFAULT_AUTHENTICATION_CLASSES': [        
+    'rest_framework.authentication.TokenAuthentication',    
+],
+}
+
+SITE_ID = 1 
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_UNIQUE_EMAIL = True
