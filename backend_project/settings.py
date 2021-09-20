@@ -40,9 +40,11 @@ INSTALLED_APPS = [
 
     'backend_app',
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -128,3 +130,6 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "backend_app.AppUser"
+
+CORS_ALLOW_ALL_ORIGINS = True
+# in production change ^this CORS setting to somethign like: CORS_ORIGIN_WHITELIST = ('cp-projectname.herokuapp.com')
