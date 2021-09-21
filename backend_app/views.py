@@ -30,7 +30,7 @@ class MessagesList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Message.objects.filter(user_name=user)
+        return Message.objects.filter(user=user)
 
 
 class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
