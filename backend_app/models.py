@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from phonenumber_field.modelfields import PhoneNumberField
+from django.utils import timezone
 
 class AppUser(AbstractUser):
     first_name = models.CharField(max_length=100)
@@ -29,6 +30,7 @@ class Message(models.Model):
     content = models.TextField()
     user = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name="messages")
     recipient = models.ForeignKey(Recipient, on_delete=models.CASCADE, related_name="messages")
+    send_date = models.DateField(default=timezone.now)
 
     def __str__(self):
         return f"From: {self.user.first_name} {self.user.last_name}.  To: {self.recipient.first_name} {self.recipient.last_name}"
