@@ -27,10 +27,11 @@ class Recipient(models.Model):
 
 
 class Message(models.Model):
+
     content = models.TextField()
     user = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name="messages")
     recipient = models.ForeignKey(Recipient, on_delete=models.CASCADE, related_name="messages")
-    send_date = models.DateField(default=timezone.now)
+    send_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"From: {self.user.first_name} {self.user.last_name}.  To: {self.recipient.first_name} {self.recipient.last_name}"
