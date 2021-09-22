@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from datetime import datetime, date
 
 
 class SignupView(generics.CreateAPIView):
@@ -94,11 +95,29 @@ class RecipientDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 
+
+#############################
+##### Specialized Views #####
+#############################
 class UserCountView(APIView):
     renderer_classes = [JSONRenderer]
 
     def get(self, request, format=None):
         user_count = AppUser.objects.filter(is_active=True).count()
         content = {'user_count': user_count}
+        return Response(content)
+
+
+
+
+
+class MessageCountView(APIView):
+    renderer_classes = [JSONRenderer]
+
+    def get(self, request, start, stop):
+        start = datetime.strptime(start, '%Y%m%d').date()
+        stop = datetime.strptime(stop, '%Y%m%d').date()
+        message_count = Message.objects.filter(send_date__gte=start, send_date__lte=stop).count()
+        content = {'message_count': message_count}
         return Response(content)
 

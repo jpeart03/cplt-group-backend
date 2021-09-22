@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from django.utils import timezone
 
 class AppUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,6 +43,7 @@ class MessageSerializer(serializers.ModelSerializer):
         message.content= validated_data['content']
         message.recipient = validated_data['recipient']
         message.user = request.user
+        # message.send_date = timezone.now()
         message.save()
         return message
 
