@@ -6,6 +6,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from datetime import datetime, date
+from django.utils.timezone import make_aware
 
 
 class SignupView(generics.CreateAPIView):
@@ -102,7 +103,7 @@ class RecipientDetail(generics.RetrieveUpdateDestroyAPIView):
 class UserCountView(APIView):
     renderer_classes = [JSONRenderer]
 
-    def get(self, request, format=None):
+    def get(self, request):
         user_count = AppUser.objects.filter(is_active=True).count()
         content = {'user_count': user_count}
         return Response(content)
@@ -114,10 +115,26 @@ class UserCountView(APIView):
 class MessageCountView(APIView):
     renderer_classes = [JSONRenderer]
 
-    def get(self, request, start, stop):
-        start = datetime.strptime(start, '%Y%m%d').date()
-        stop = datetime.strptime(stop, '%Y%m%d').date()
-        message_count = Message.objects.filter(send_date__gte=start, send_date__lte=stop).count()
+    def get(self, request):
+        start = self.request.query_params.get('start')
+        stop = self.request.query_params.get('stop')
+
+        if start and stop:
+            start = make_aware(datetime.strptime(start, '%Y%m%d')).date()
+            stop = make_aware(datetime.strptime(stop, '%Y%m%d')).date()
+            message_count = Message.objects.filter(send_date__gte=start, send_date__lte=stop).count()
+        elif start:
+            start = make_aware(datetime.strptime(start, '%Y%m%d')).date()
+            message_count = Message.objects.filter(send_date__gte=start).count()
+        else:
+            message_count = Message.objects.all().count()
         content = {'message_count': message_count}
         return Response(content)
 
+
+
+class WordCountView(APIView):
+    renderer_classes = [JSONRenderer]
+
+    def get(self, request):
+        pass
