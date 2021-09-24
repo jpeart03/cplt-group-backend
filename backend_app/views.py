@@ -7,6 +7,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from datetime import datetime, date
 from django.utils.timezone import make_aware
+from collections import Counter
+import nltk
+from nltk.corpus import stopwords
+nltk.download('stopwords')
+nltk.download('punkt')
+from nltk.tokenize import word_tokenize
+import re
 
 
 class SignupView(generics.CreateAPIView):
@@ -120,11 +127,11 @@ class MessageCountView(APIView):
         stop = self.request.query_params.get('stop')
 
         if start and stop:
-            start = make_aware(datetime.strptime(start, '%Y%m%d')).date()
-            stop = make_aware(datetime.strptime(stop, '%Y%m%d')).date()
+            start = make_aware(datetime.strptime(start, '%Y%m%d'))
+            stop = make_aware(datetime.strptime(stop, '%Y%m%d'))
             message_count = Message.objects.filter(send_date__gte=start, send_date__lte=stop).count()
         elif start:
-            start = make_aware(datetime.strptime(start, '%Y%m%d')).date()
+            start = make_aware(datetime.strptime(start, '%Y%m%d'))
             message_count = Message.objects.filter(send_date__gte=start).count()
         else:
             message_count = Message.objects.all().count()
@@ -137,4 +144,11 @@ class WordCountView(APIView):
     renderer_classes = [JSONRenderer]
 
     def get(self, request):
-        pass
+        messages = Message.objects.all() # Get the message queryset
+        contents_list = [message.content for message in messages] # Extract the objects' content
+        contents_str = ' '.join(contents_list) # Join into a single string
+        contents_no_punc = re.sub(r'[^\w\s]', '', contents_str) # Remove punctuation
+        contents_tokens = word_tokenize(contents_no_punc.lower()) # Tokenize and lower case
+        filtered_tokens = [word for word in contents_tokens if not word in stopwords.words()] # Count the values
+        content = Counter(filtered_tokens)
+        return Response(content)
