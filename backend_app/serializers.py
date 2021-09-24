@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from django.utils import timezone
+from .twilio import *
 
 class AppUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,6 +45,9 @@ class MessageSerializer(serializers.ModelSerializer):
         message.recipient = validated_data['recipient']
         message.user = request.user
         # message.send_date = timezone.now()
+        print("TEST TEST TEST TEST TEST")
+        client = create_twilio_client()
+        send_twilio_message(client)
         message.save()
         return message
 
