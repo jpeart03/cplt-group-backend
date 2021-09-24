@@ -2,6 +2,18 @@ from .models import *
 from .serializers import *
 from rest_framework import serializers, viewsets, generics
 from rest_framework.permissions import AllowAny
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from datetime import datetime, date
+from django.utils.timezone import make_aware
+from collections import Counter
+import nltk
+from nltk.corpus import stopwords
+nltk.download('stopwords')
+nltk.download('punkt')
+from nltk.tokenize import word_tokenize
+import re
 
 
 class SignupView(generics.CreateAPIView):
@@ -11,26 +23,34 @@ class SignupView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         if serializer.is_valid():
-            print(serializer.validated_data)
             email = serializer.validated_data["email"]
             password = serializer.validated_data["password"]
             AppUser.objects.create_user(email=email, password=password)
+
+
+
+
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = AppUser.objects.all()
     serializer_class = AppUserSerializer
 
 
+
+
+
 class MessagesList(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
 
     def perform_create(self, serializer):        
-        print('createview')
         serializer.save()
 
     def get_queryset(self):
         user = self.request.user
         return Message.objects.filter(user=user)
+
+
+
 
 
 class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -50,18 +70,23 @@ class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer): # This intentionally prevents upding of messages
         return 
 
+
+
+
+
 class RecipientList(generics.ListCreateAPIView):
     serializer_class = RecipientSerializer
 
     def perform_create(self, serializer):
         user = self.request.user.id    
-        print('createview')
-        print('user', user)
         serializer.save(user=user)
 
     def get_queryset(self):
         user = self.request.user
         return Recipient.objects.filter(user=user)
+
+
+
 
 
 class RecipientDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -76,46 +101,61 @@ class RecipientDetail(generics.RetrieveUpdateDestroyAPIView):
         return Recipient.objects.filter(user=user)
 
 
-# class UserViewSet(viewsets.ModelViewSet):
-#     queryset = AppUser.objects.all()
-#     serializer_class = AppUserSerializer
+
+
+
+#############################
+##### Specialized Views #####
+#############################
+class UserCountView(APIView):
+    renderer_classes = [JSONRenderer]
+
+    def get(self, request):
+        user_count = AppUser.objects.filter(is_active=True).count()
+        content = {'user_count': user_count}
+        return Response(content)
 
 
 
 
 
-# class RecipientViewSet(viewsets.ModelViewSet):
-#     serializer_class = RecipientSerializer
+class MessageCountView(APIView):
+    renderer_classes = [JSONRenderer]
 
-#     def get_queryset(self):
-#         recps = Recipient.objects.filter(user=self.kwargs['user_pk'])
-#         return recps
+    def get(self, request):
+        start = self.request.query_params.get('start')
+        stop = self.request.query_params.get('stop')
 
-#     def perform_create(self, serializer):
-#         user = AppUser.objects.get(pk=self.kwargs['user_pk'])
-#         serializer.save(user=user)
+        if start:
+            start = make_aware(datetime.strptime(start, '%Y%m%d'))
+        else:
+            start = make_aware(datetime.strptime('20210830', '%Y%m%d'))
+
+        if stop:
+            stop = make_aware(datetime.strptime(stop, '%Y%m%d'))
+        else:
+            stop = timezone.now()
+
+        messages = Message.objects.filter(send_date__gte=start, send_date__lte=stop)
+        dates = [message.send_date.date().strftime("%Y%m%d") for message in messages]
+    
+        message_count = Counter(dates)
+        content = {'message_count': message_count}
+        return Response(content)
 
 
 
 
-# class MessageViewSet(viewsets.ModelViewSet):
-#     serializer_class = MessageSerializer
 
-#     def get_queryset(self):
-#         mgs = Message.objects.filter(user=self.kwargs['user_pk'])
-#         return mgs
+class WordCountView(APIView):
+    renderer_classes = [JSONRenderer]
 
-#     def perform_create(self, serializer):
-#         user = AppUser.objects.get(pk=self.kwargs['user_pk'])
-
-#         recipient_pk = self.request.POST['recipient']
-#         recipient = Recipient.objects.get(pk=recipient_pk)
-
-#         serializer.save(user=user, recipient=recipient)
-
-#     def perform_destroy(self, instance): # This intentionally prevents deletion of messages
-#         return
-
-#     def perform_update(self, serializer): # This intentionally prevents upding of messages
-#         return 
-        
+    def get(self, request):
+        messages = Message.objects.all() # Get the message queryset
+        contents_list = [message.content for message in messages] # Extract the objects' content
+        contents_str = ' '.join(contents_list) # Join into a single string
+        contents_no_punc = re.sub(r'[^\w\s]', '', contents_str) # Remove punctuation
+        contents_tokens = word_tokenize(contents_no_punc.lower()) # Tokenize and lower case
+        filtered_tokens = [word for word in contents_tokens if not word in stopwords.words()] # Count the values
+        content = Counter(filtered_tokens)
+        return Response(content)

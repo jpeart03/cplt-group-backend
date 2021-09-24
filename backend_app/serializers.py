@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from django.utils import timezone
 
 class AppUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,17 +12,11 @@ class AppUserSerializer(serializers.ModelSerializer):
 
 
 class RecipientSerializer(serializers.ModelSerializer):
-    # user = AppUserSerializer(many=True, read_only=True)
-    # relationship_type = serializers.StringRelatedField(read_only=True)
-    user = serializers.SerializerMethodField()
-
     class Meta:
         model = Recipient
         fields = ['id', 'first_name', 'last_name', 'user', 'relationship_type', 'email', 'phone']
 
     def create(self, validated_data):
-        print('createSerializer')
-        print(validated_data)
         request = self.context.get('request')
         recipient = Recipient()
         recipient.first_name = validated_data['first_name']
@@ -33,32 +28,22 @@ class RecipientSerializer(serializers.ModelSerializer):
         recipient.save()
         return recipient
 
-    def get_user(self, obj):
-        return obj.user.id
+  
 
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    # user = AppUserSerializer(many=True, read_only=True)
-    # recipient = RecipientSerializer(many=True, read_only=True)
-    user = serializers.SerializerMethodField()
-
     class Meta:
         model = Message
         fields = ['id', 'content', 'user', 'recipient', 'send_date']
 
     def create(self, validated_data):
-        print('createSerializer')
         request = self.context.get('request')
-        # print(validated_data['recipient'])
-        # rec = Recipient.objects.get(id=validated_data['recipient'])
         message = Message()
         message.content= validated_data['content']
         message.recipient = validated_data['recipient']
         message.user = request.user
+        # message.send_date = timezone.now()
         message.save()
         return message
-
-    def get_user(self, obj):
-        return obj.user.id
 
