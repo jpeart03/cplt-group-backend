@@ -126,17 +126,24 @@ class MessageCountView(APIView):
         start = self.request.query_params.get('start')
         stop = self.request.query_params.get('stop')
 
-        if start and stop:
+        if start:
             start = make_aware(datetime.strptime(start, '%Y%m%d'))
-            stop = make_aware(datetime.strptime(stop, '%Y%m%d'))
-            message_count = Message.objects.filter(send_date__gte=start, send_date__lte=stop).count()
-        elif start:
-            start = make_aware(datetime.strptime(start, '%Y%m%d'))
-            message_count = Message.objects.filter(send_date__gte=start).count()
         else:
-            message_count = Message.objects.all().count()
+            start = make_aware(datetime.strptime('20210830', '%Y%m%d'))
+
+        if stop:
+            stop = make_aware(datetime.strptime(stop, '%Y%m%d'))
+        else:
+            stop = timezone.now()
+
+        messages = Message.objects.filter(send_date__gte=start, send_date__lte=stop)
+        dates = [message.send_date.date().strftime("%Y%m%d") for message in messages]
+    
+        message_count = Counter(dates)
         content = {'message_count': message_count}
         return Response(content)
+
+
 
 
 
