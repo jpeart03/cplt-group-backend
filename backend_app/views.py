@@ -1,6 +1,6 @@
 from .models import *
 from .serializers import *
-from rest_framework import serializers, viewsets, generics
+from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -26,14 +26,6 @@ class SignupView(generics.CreateAPIView):
             email = serializer.validated_data["email"]
             password = serializer.validated_data["password"]
             AppUser.objects.create_user(email=email, password=password)
-
-
-
-
-
-class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = AppUser.objects.all()
-    serializer_class = AppUserSerializer
 
 
 
@@ -84,7 +76,7 @@ class RecipientList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Recipient.objects.filter(user=user)
+        return Recipient.objects.filter(user=user, is_active=True)
 
 
 
@@ -142,6 +134,20 @@ class MessageCountView(APIView):
     
         message_count = Counter(dates)
         content = {'message_count': message_count}
+        return Response(content)
+
+
+
+
+
+class MessageCountByDayView(APIView):
+    renderer_classes = [JSONRenderer]
+
+    def get(self, request):
+        messages = Message.objects.all()
+        days = [message.send_date.date().weekday() for message in messages]
+        print(days)
+        content = Counter(days)
         return Response(content)
 
 
