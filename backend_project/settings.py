@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +30,7 @@ ALLOWED_HOSTS = []
 
 CORS_ALLOWED_ORIGINS = [    
 'http://localhost:3000',
-#'https://heroku_front_end_url.com',
+'https://appreciationnotes.herokuapp.com/',
 ]
 
 # Application definition
@@ -167,3 +168,5 @@ ACCOUNT_UNIQUE_EMAIL = True
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'backend_app.serializers.AppUserSerializer',
 }
+
+django_heroku.settings(locals())
