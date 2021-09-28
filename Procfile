@@ -1,1 +1,1 @@
-web: gunicorn appreciationnotes.wsgi
+web: gunicorn backend_project.wsgi
