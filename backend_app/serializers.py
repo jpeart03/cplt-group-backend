@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from .models import *
 from django.utils import timezone
-from .twilio import *
-from .sendgrid import *
+from .integrations.twilio import *
+from .integrations.sendgrid import *
 
 class AppUserSerializer(serializers.ModelSerializer):
     class Meta:
