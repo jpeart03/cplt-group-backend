@@ -18,6 +18,9 @@ class AppUser(AbstractUser):
         return f"{self.first_name} {self.last_name}"
 
 
+
+
+
 class Recipient(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -29,6 +32,9 @@ class Recipient(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+
 
 
 class Message(models.Model):

@@ -14,6 +14,7 @@ nltk.download('stopwords')
 nltk.download('punkt')
 from nltk.tokenize import word_tokenize
 import re
+from .prompts.generate_prompt import generate_prompt
 
 
 class SignupView(generics.CreateAPIView):
@@ -146,7 +147,6 @@ class MessageCountByDayView(APIView):
     def get(self, request):
         messages = Message.objects.all()
         days = [message.send_date.date().weekday() for message in messages]
-        print(days)
         content = Counter(days)
         return Response(content)
 
@@ -165,4 +165,15 @@ class WordCountView(APIView):
         contents_tokens = word_tokenize(contents_no_punc.lower()) # Tokenize and lower case
         filtered_tokens = [word for word in contents_tokens if not word in stopwords.words()] # Count the values
         content = Counter(filtered_tokens)
+        return Response(content)
+
+
+
+
+
+class GeneratePromptView(APIView):
+    renderer_classes = [JSONRenderer]
+
+    def get(self, request):
+        content = {'prompt': generate_prompt(request.data['relationship_type'])}
         return Response(content)

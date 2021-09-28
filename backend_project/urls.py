@@ -1,7 +1,7 @@
 from backend_app.views import UserCountView
 from django.contrib import admin
 from django.urls import path, include, re_path
-from backend_app.views import UserCountView, MessageCountView, MessageCountByDayView, WordCountView
+from backend_app.views import UserCountView, MessageCountView, MessageCountByDayView, WordCountView, GeneratePromptView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -10,5 +10,5 @@ urlpatterns = [
     path('message_count/', MessageCountView.as_view()),
     path('message_count_by_day/', MessageCountByDayView.as_view()),
     path('word_count/', WordCountView.as_view()),
-
+    path('generate_prompt/', GeneratePromptView.as_view()),
 ]
