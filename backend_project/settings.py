@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import django_heroku
+# import os
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6p*(rvkphahnc@mn50qbs@2=uv6n=&ax63y=g@aq#09j2no(_w'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -29,7 +35,7 @@ ALLOWED_HOSTS = []
 
 CORS_ALLOWED_ORIGINS = [    
 'http://localhost:3000',
-#'https://heroku_front_end_url.com',
+# 'https://appreciationnotes.herokuapp.com/',
 ]
 
 # Application definition
@@ -167,3 +173,7 @@ ACCOUNT_UNIQUE_EMAIL = True
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'backend_app.serializers.AppUserSerializer',
 }
+
+django_heroku.settings(locals())
+
+CORS_ORIGIN_WHITELIST = ('https://appreciationnotes.herokuapp.com/')
