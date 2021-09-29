@@ -45,6 +45,8 @@ class Message(models.Model):
     send_date = models.DateTimeField(default=timezone.now)
     send_sms = models.BooleanField(default=False)
     send_email = models.BooleanField(default=False)
+    sent_to_email = models.CharField(max_length=100, default='')
+    sent_to_phone = PhoneNumberField(default='')
 
     def __str__(self):
         return f"From: {self.user.first_name} {self.user.last_name}.  To: {self.recipient.first_name} {self.recipient.last_name}"
