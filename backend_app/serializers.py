@@ -30,7 +30,7 @@ class RecipientSerializer(serializers.ModelSerializer):
         recipient.save()
         return recipient
 
-  
+
 
 
 
