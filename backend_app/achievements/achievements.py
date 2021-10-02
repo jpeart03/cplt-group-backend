@@ -87,10 +87,14 @@ def check_recipient_achievements(user, recipients):
         new_unlocks.append("Networking - Level 3")
 
 
-    # # Stand-alone Achievements
-    # old_emails = ['@aol.com', '@yahoo.com', '@hotmail.com']
-    # emails = [recipient.email for recipient in recipients]
-    # has_old_email = any(old_email in emails for old_email in old_emails)
+    # Stand-alone Achievements
+    old_emails = ['@aol.com', '@yahoo.com', '@hotmail.com']
+    emails = [recipient.email for recipient in recipients]
+    has_old_email = any(old_email in email for old_email in old_emails for email in emails)
+
+    if not user.what_year_is_it and has_old_email:
+        user.what_year_is_it = True
+        new_unlocks.append("What year is it?!?")
 
 
     user.save()
