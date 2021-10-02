@@ -1,0 +1,15 @@
+personal_prompts = [
+    'Today I didn’t have to _____ because you _______.  Thank you.',
+    'I wanted to let you know that I admire your ________.  I don’t understand it, but it’s  _________!',
+    'When you _______ it makes me smile.',
+    'Did you know that if I could ______  with anyone in the world, it would be you?',
+    'You are my _______, always.',
+    'Every time I feel ________ you have this _______ way of making my feel _______.',
+    'Your ______ is so different than how I _______. I love it!',
+    'Your superpower is you ________.',
+    'When I met you, one thing that drew my attention was ________.',
+    'I don’t say this out loud every day, but I want you to know that ______________ .',
+    'We make a good team because your ________ compliments my _________ to create  a ___________ harmony.',
+    'I know this is super cheesy, but after last week’s ________ I feel so grateful to have you by my side.',
+    'If you asked me to _________ again today, the answer would still be yes!',
+]

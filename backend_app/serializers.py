@@ -1,14 +1,16 @@
 from rest_framework import serializers
 from .models import *
 from django.utils import timezone
-from .twilio import *
-from .sendgrid import *
+from .integrations.twilio import *
+from .integrations.sendgrid import *
+from .achievements.achievements import *
+
 
 class AppUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = AppUser
-        fields = ['id', 'first_name', 'last_name', 'email', 'phone', 'username', 'is_active']#, 'messages', 'recipients']
-
+        # fields = ['id', 'first_name', 'last_name', 'email', 'phone', 'username', 'is_active']#, 'messages', 'recipients']
+        fields = '__all__'
 
 
 
@@ -28,6 +30,9 @@ class RecipientSerializer(serializers.ModelSerializer):
         recipient.phone = validated_data['phone']
         recipient.user = request.user
         recipient.save()
+
+        achievements = check_recipient_achievements(recipient.user, Recipient.objects.filter(user=recipient.user))
+        # print('New recipient unlocks', achievements)
         return recipient
 
   
@@ -37,7 +42,7 @@ class RecipientSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['id', 'content', 'user', 'recipient', 'send_date', 'send_sms', 'send_email']
+        fields = ['id', 'content', 'user', 'recipient', 'send_date', 'send_sms', 'send_email', 'sent_to_phone', 'sent_to_email']
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -49,11 +54,16 @@ class MessageSerializer(serializers.ModelSerializer):
         message.send_email = validated_data.get('send_email', False)
         if message.send_sms:
             to_number = str(validated_data['recipient'].phone)
+            message.sent_to_phone = to_number
             client = create_twilio_client()
             send_twilio_sms(client, to_number=to_number, content=validated_data['content'])
         if message.send_email:
             to_email = validated_data['recipient'].email
+            message.sent_to_email = to_email
             send_sendgrid_email(to_email=to_email, content=validated_data['content'])
         message.save()
+        
+        achievements = check_message_achievements(message.user, Message.objects.filter(user=message.user), message.recipient)
+        # print('New message unlocks', achievements)
         return message
 
