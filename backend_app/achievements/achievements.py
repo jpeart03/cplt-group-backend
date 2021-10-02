@@ -1,12 +1,11 @@
-def test():
-    print("test")
+from django.utils import timezone
+import datetime
 
-def check_message_achievements(user, messages):
+def check_message_achievements(user, messages, this_recipient):
     new_unlocks = []
     personal_messages = [message for message in messages if message.recipient.relationship_type == 'personal']
     professional_messages = [message for message in messages if message.recipient.relationship_type == 'professional']
-    # print("professional", professional_messages)
-    # print('personal', personal_messages)
+    recipient_messages = [message for message in messages if message.recipient == this_recipient]
 
     # Worlds Best Boss Levels
     if not user.worlds_best_boss_1 and len(professional_messages) >= 5:
@@ -37,13 +36,42 @@ def check_message_achievements(user, messages):
 
 
     # It Takes Committment Levels
+    message_weeks = [(message.send_date.strftime('%U'), message.send_date.strftime('%Y')) for message in messages]
+    this_week = (timezone.now().date().strftime('%U'), timezone.now().date().strftime('%Y'))
+
+    def check_weeks(week, year, num_week_lookback, message_weeks):
+        week = int(week)
+        year = int(year)
+        start_week = week - num_week_lookback
+
+        if start_week <= 0:
+            start_week = start_week + 52
+            start_year = int(year) - 1
+
+            relevant_weeks = [(str(x), str(start_year)) for x in range(start_week, 53)]
+            relevant_weeks.extend([(str(x), str(year))] for x in range(week))
+        else:
+            relevant_weeks = [(str(x), str(year)) for x in range(start_week, week)]
+
+        return all(relevant_week in message_weeks for relevant_week in relevant_weeks)
+
+
+    if not user.it_takes_committment_1 and check_weeks(this_week[0], this_week[1], 4, message_weeks):
+        user.it_takes_committment_1 = True
+        new_unlocks.append('It Takes Committment - Level 1')
+
+    if not user.it_takes_committment_2 and check_weeks(this_week[0], this_week[1], 24, message_weeks):
+        user.it_takes_committment_2 = True
+        new_unlocks.append('It Takes Committment - Level 2')
+
+    if not user.it_takes_committment_3 and check_weeks(this_week[0], this_week[1], 51, message_weeks):
+        user.it_takes_committment_3 = True
+        new_unlocks.append('It Takes Committment - Level 3')
 
 
     # Stand-alone Achievements
     message_contents = [message.content for message in messages]
     message_lengths = [len(content) for content in message_contents]
-    contains_smiley = [content for content in message_contents if ':)' in content]
-
 
     if not user.short_and_sweet and (min(message_lengths) <= 10):
         user.short_and_sweet = True
@@ -53,13 +81,33 @@ def check_message_achievements(user, messages):
         user.dickens = True
         new_unlocks.append("Dickens")
 
+
+    contains_smiley = [content for content in message_contents if ':)' in content]
+
     if not user.old_school and (len(contains_smiley) >= 1):
         user.old_school = True
         new_unlocks.append("Old School")
 
 
+    latest_messages = [message.send_date for message in recipient_messages if message.send_date.date() < timezone.now().date()]
+    latest_message = max(latest_messages)
 
+    if not user.forget_me_not and (timezone.now() - latest_message) >= datetime.timedelta(days=14):
+        user.forget_me_not = True
+        new_unlocks.append("Forget Me Not")
 
+    
+    message_times = [message.send_date.strftime('%H') for message in messages]
+    lunch_times = ['11', '12']
+    sleep_times = ['00', '01', '02', '03', '04', '05']
+    
+    if not user.lunch_break and any(lunch_time in message_time for lunch_time in lunch_times for message_time in message_times):
+        user.lunch_break = True
+        new_unlocks.append('Lunch Break')
+
+    if not user.sleep_mode and any(sleep_time in message_time for sleep_time in sleep_times for message_time in message_times):
+        user.sleep_mode = True
+        new_unlocks.append('I hope their phone was in sleep mode')
 
 
     user.save()
@@ -70,7 +118,6 @@ def check_message_achievements(user, messages):
 
 def check_recipient_achievements(user, recipients):
     new_unlocks = []
-    # personal_recipients = [recipient for recipient in recipients if recipient.relationship_type == 'personal']
     professional_recipients = [recipient for recipient in recipients if recipient.relationship_type == 'professional']
 
     # Networking Levels
@@ -102,20 +149,8 @@ def check_recipient_achievements(user, recipients):
   
 
 
-    # sleep_mode = models.BooleanField(default=False)
-    # lunch_break = models.BooleanField(default=False)
-    # forget_me_not = models.BooleanField(default=False)
 
 
     # sentimental = models.BooleanField(default=False)
     # send_i_mental = models.BooleanField(default=False)
     # nerd = models.BooleanField(default=False)
-
-    # what_year_is_it = models.BooleanField(default=False)
-
-
-
-
-    # it_takes_committment_1 = models.BooleanField(default=False)
-    # it_takes_committment_2 = models.BooleanField(default=False)
-    # it_takes_committment_3 = models.BooleanField(default=False)
