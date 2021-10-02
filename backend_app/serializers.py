@@ -3,12 +3,14 @@ from .models import *
 from django.utils import timezone
 from .integrations.twilio import *
 from .integrations.sendgrid import *
+from .achievements.achievements import *
+
 
 class AppUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = AppUser
-        fields = ['id', 'first_name', 'last_name', 'email', 'phone', 'username', 'is_active']#, 'messages', 'recipients']
-
+        # fields = ['id', 'first_name', 'last_name', 'email', 'phone', 'username', 'is_active']#, 'messages', 'recipients']
+        fields = '__all__'
 
 
 
@@ -28,6 +30,9 @@ class RecipientSerializer(serializers.ModelSerializer):
         recipient.phone = validated_data['phone']
         recipient.user = request.user
         recipient.save()
+
+        achievements = check_recipient_achievements(recipient.user, Recipient.objects.filter(user=recipient.user))
+        print('New recipient unlocks', achievements)
         return recipient
 
 
@@ -57,5 +62,8 @@ class MessageSerializer(serializers.ModelSerializer):
             message.sent_to_email = to_email
             send_sendgrid_email(to_email=to_email, content=validated_data['content'])
         message.save()
+        
+        achievements = check_message_achievements(message.user, Message.objects.filter(user=message.user))
+        print('New message unlocks', achievements)
         return message
 
