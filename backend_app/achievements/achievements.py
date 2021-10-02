@@ -146,9 +146,6 @@ def check_recipient_achievements(user, recipients):
 
     user.save()
     return new_unlocks
-  
-
-
 
 
     # sentimental = models.BooleanField(default=False)
