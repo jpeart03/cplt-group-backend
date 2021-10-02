@@ -11,6 +11,28 @@ class AppUser(AbstractUser):
     phone = PhoneNumberField() # Retreive using User.phone.as_e164 for Twillio
     is_active = models.BooleanField(default=True)
 
+    worlds_best_boss_1 = models.BooleanField(default=False)
+    worlds_best_boss_2 = models.BooleanField(default=False)
+    worlds_best_boss_3 = models.BooleanField(default=False)
+    cassanova_1 = models.BooleanField(default=False)
+    cassanova_2 = models.BooleanField(default=False)
+    cassanova_3 = models.BooleanField(default=False)
+    short_and_sweet = models.BooleanField(default=False)
+    dickens = models.BooleanField(default=False)
+    it_takes_committment_1 = models.BooleanField(default=False)
+    it_takes_committment_2 = models.BooleanField(default=False)
+    it_takes_committment_3 = models.BooleanField(default=False)
+    sleep_mode = models.BooleanField(default=False)
+    lunch_break = models.BooleanField(default=False)
+    forget_me_not = models.BooleanField(default=False)
+    networking_1 = models.BooleanField(default=False)
+    networking_2 = models.BooleanField(default=False)
+    networking_3 = models.BooleanField(default=False)
+    sentimental = models.BooleanField(default=False)
+    # send_i_mental = models.BooleanField(default=False)
+    what_year_is_it = models.BooleanField(default=False)
+    nerd = models.BooleanField(default=False)
+    old_school = models.BooleanField(default=False)
 
     REQUIRED_FIELDS = []
 
