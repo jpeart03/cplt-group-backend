@@ -32,7 +32,7 @@ class RecipientSerializer(serializers.ModelSerializer):
         recipient.save()
 
         achievements = check_recipient_achievements(recipient.user, Recipient.objects.filter(user=recipient.user))
-        print('New recipient unlocks', achievements)
+        # print('New recipient unlocks', achievements)
         return recipient
 
 
@@ -63,7 +63,7 @@ class MessageSerializer(serializers.ModelSerializer):
             send_sendgrid_email(to_email=to_email, content=validated_data['content'])
         message.save()
         
-        achievements = check_message_achievements(message.user, Message.objects.filter(user=message.user))
-        print('New message unlocks', achievements)
+        achievements = check_message_achievements(message.user, Message.objects.filter(user=message.user), message.recipient)
+        # print('New message unlocks', achievements)
         return message
 

@@ -164,11 +164,13 @@ class WordCountView(APIView):
         contents_no_punc = re.sub(r'[^\w\s]', '', contents_str) # Remove punctuation
         contents_tokens = word_tokenize(contents_no_punc.lower()) # Tokenize and lower case
         filtered_tokens = [word for word in contents_tokens if not word in stopwords.words()] # Count the values
-        content = Counter(filtered_tokens)
+        content = []
+        word_count = Counter(filtered_tokens)
+        
+        for k, v in word_count.items():
+            content.append({'value': k, 'count': v})
+
         return Response(content)
-
-
-
 
 
 class GeneratePromptView(APIView):
