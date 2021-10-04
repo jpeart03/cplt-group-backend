@@ -35,7 +35,7 @@ class RecipientSerializer(serializers.ModelSerializer):
         # print('New recipient unlocks', achievements)
         return recipient
 
-  
+
 
 
 
