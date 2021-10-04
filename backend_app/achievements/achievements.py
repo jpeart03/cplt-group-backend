@@ -3,11 +3,12 @@ import datetime
 
 def check_message_achievements(user, messages, this_recipient):
     new_unlocks = []
-    personal_messages = [message for message in messages if message.recipient.relationship_type == 'personal']
-    professional_messages = [message for message in messages if message.recipient.relationship_type == 'professional']
+    personal_messages = [message for message in messages if message.recipient.relationship_type == 'Personal']
+    professional_messages = [message for message in messages if message.recipient.relationship_type == 'Professional']
     recipient_messages = [message for message in messages if message.recipient == this_recipient]
 
     # Worlds Best Boss Levels
+    
     if not user.worlds_best_boss_1 and len(professional_messages) >= 5:
         user.worlds_best_boss_1 = True
         new_unlocks.append("World's Best Boss - Level 1")
