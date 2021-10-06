@@ -134,7 +134,9 @@ class MessageCountView(APIView):
         dates = [message.send_date.date().strftime("%Y%m%d") for message in messages]
     
         message_count = Counter(dates)
-        content = {'message_count': message_count}
+        content = []
+        for k, v in message_count.items():
+            content.append({'name': k, 'value': v})
         return Response(content)
 
 
