@@ -131,7 +131,7 @@ class MessageCountView(APIView):
             stop = timezone.now()
 
         messages = Message.objects.filter(send_date__gte=start, send_date__lte=stop)
-        dates = [message.send_date.date().strftime("%Y%m%d") for message in messages]
+        dates = [message.send_date.date().strftime("%Y-%m-%d") for message in messages]
     
         message_count = Counter(dates)
         content = []
