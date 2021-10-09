@@ -7,8 +7,6 @@ def check_message_achievements(user, messages, this_recipient):
     professional_messages = [message for message in messages if message.recipient.relationship_type == 'Professional']
     recipient_messages = [message for message in messages if message.recipient == this_recipient]
 
-# reset Short&Sweet
-    user.short_and_sweet = False
 
     # Worlds Best Boss Levels
     
@@ -123,6 +121,9 @@ def check_message_achievements(user, messages, this_recipient):
         new_unlocks.append('I hope their phone was in sleep mode')
 
 
+# reset Short&Sweet
+    # user.short_and_sweet = False
+    
     user.save()
     return new_unlocks
 
