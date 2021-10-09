@@ -11,4 +11,5 @@ urlpatterns = [
     path('recipients/<int:id>/', RecipientDetail.as_view()),
     path('messages/', MessagesList.as_view()),
     path('messages/<int:id>/', MessageDetail.as_view()),
+    path('message_count/', MessageCountView.as_view()),
 ]
