@@ -178,6 +178,6 @@ class WordCountView(APIView):
 class GeneratePromptView(APIView):
     renderer_classes = [JSONRenderer]
 
-    def get(self, request):
+    def post(self, request):
         content = {'prompt': generate_prompt(request.data['relationship_type'])}
         return Response(content)
