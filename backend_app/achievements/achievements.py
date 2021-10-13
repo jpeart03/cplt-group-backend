@@ -7,6 +7,7 @@ def check_message_achievements(user, messages, this_recipient):
     professional_messages = [message for message in messages if message.recipient.relationship_type == 'Professional']
     recipient_messages = [message for message in messages if message.recipient == this_recipient]
 
+
     # Worlds Best Boss Levels
     
     if not user.worlds_best_boss_1 and len(professional_messages) >= 5:
@@ -74,6 +75,8 @@ def check_message_achievements(user, messages, this_recipient):
     message_contents = [message.content for message in messages]
     message_lengths = [len(content) for content in message_contents]
 
+    print("MESSAGE LENGTHS: ", message_lengths)
+
     if not user.short_and_sweet and (min(message_lengths) <= 10):
         user.short_and_sweet = True
         new_unlocks.append("Short and Sweet")
@@ -91,11 +94,18 @@ def check_message_achievements(user, messages, this_recipient):
 
 
     latest_messages = [message.send_date for message in recipient_messages if message.send_date.date() < timezone.now().date()]
-    latest_message = max(latest_messages)
+    # print("SAMPLE DATE: ", recipient_messages[0].send_date)
+    # print("SAMPLE DATE.DATE----: ", recipient_messages[0].send_date.date())
+    # print("TIMEZONE NOW:", timezone.now().date())
+    # print(recipient_messages[0].send_date.date() < timezone.now().date())
+    # print("LATEST MESSAGES:", latest_messages)
 
-    if not user.forget_me_not and (timezone.now() - latest_message) >= datetime.timedelta(days=14):
-        user.forget_me_not = True
-        new_unlocks.append("Forget Me Not")
+    if latest_messages:
+        latest_message = max(latest_messages)
+
+        if not user.forget_me_not and (timezone.now() - latest_message) >= datetime.timedelta(days=14):
+            user.forget_me_not = True
+            new_unlocks.append("Forget Me Not")
 
     
     message_times = [message.send_date.strftime('%H') for message in messages]
@@ -111,6 +121,9 @@ def check_message_achievements(user, messages, this_recipient):
         new_unlocks.append('I hope their phone was in sleep mode')
 
 
+# reset Short&Sweet
+    # user.short_and_sweet = False
+    
     user.save()
     return new_unlocks
 
