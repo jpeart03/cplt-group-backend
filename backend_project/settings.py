@@ -176,4 +176,4 @@ REST_AUTH_SERIALIZERS = {
 
 django_heroku.settings(locals())
 
-CORS_ORIGIN_WHITELIST = ('https://appreciationnotes.herokuapp.com/')
+CORS_ORIGIN_WHITELIST = ('https://appreciation-notes.herokuapp.com/')
